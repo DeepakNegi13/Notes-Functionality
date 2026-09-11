@@ -1,6 +1,6 @@
 # Notes Backend System
 
-A simple REST API built with Node.js and Express for creating, reading, updating, and deleting notes.
+A simple REST API built with Node.js, Express, and MongoDB for creating, reading, updating, and deleting notes.
 
 ## Features
 
@@ -9,11 +9,13 @@ A simple REST API built with Node.js and Express for creating, reading, updating
 - Update a note with `PATCH /notes/:id`
 - Delete a note with `DELETE /notes/:id`
 - JSON request body support through Express middleware
+- Persistent note storage with MongoDB through Mongoose
 
 ## Requirements
 
 - Node.js 18 or later
 - npm
+- A running MongoDB instance or MongoDB Atlas cluster
 
 ## Installation
 
@@ -23,7 +25,15 @@ A simple REST API built with Node.js and Express for creating, reading, updating
     npm install
     ```
 
-2. Start the server:
+2. Create a `.env` file in the project root and add your MongoDB connection string:
+
+    ```env
+    MONGODB_URI=mongodb://127.0.0.1:27017/notes
+    ```
+
+    For MongoDB Atlas, replace the value with your Atlas connection string.
+
+3. Start the server:
 
     ```bash
     node server.js
@@ -57,7 +67,7 @@ Example request body:
 }
 ```
 
-Notes are stored in memory for the lifetime of the server process.
+The note is stored in MongoDB and the created document is returned in the response.
 
 ### Get all notes
 
@@ -86,7 +96,7 @@ PATCH /notes/:id
 Content-Type: application/json
 ```
 
-Replace `:id` with the note's zero-based array index.
+Replace `:id` with the note's MongoDB document ID.
 
 Example:
 
@@ -100,7 +110,7 @@ PATCH /notes/0
 DELETE /notes/:id
 ```
 
-Replace `:id` with the note's zero-based array index.
+Replace `:id` with the note's MongoDB document ID.
 
 Example response:
 
@@ -114,17 +124,20 @@ Example response:
 
 ```text
 notes-Backend-System/
-├── server.js       # Starts the Express server
+├── server.js                # Connects to MongoDB and starts the server
 ├── src/
-│   └── app.js      # Express application and note routes
-├── package.json    # Project metadata and scripts
-└── README.md       # Project documentation
+│   ├── app.js               # Express application and note routes
+│   ├── config/
+│   │   └── database.js      # MongoDB connection setup
+│   └── models/
+│       └── notes.models.js  # Mongoose note schema and model
+├── package.json             # Project metadata and scripts
+└── README.md                # Project documentation
 ```
 
 ## Current Limitations
 
-- Notes are stored only in memory and are lost when the server restarts.
-- There is no database or authentication layer.
+- The `PATCH` handler is not yet fully connected to MongoDB and currently reads the description from the request object instead of the JSON request body.
+- There is no authentication layer.
 - The API currently does not validate note fields or return detailed errors for invalid note IDs.
-- The `PATCH` handler currently reads the description from the request object instead of the JSON request body, so update behavior needs further implementation.
 - The test script is not implemented yet.
