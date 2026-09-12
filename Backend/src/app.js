@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const note = require("./models/notes.models")
-const notes = []
+const cors = require("cors");
+app.use(cors());
 app.use(express.json())
 app.delete("/notes/:id",(req,res)=>{
-    note.deleteOne({_id:req.params.id}).then(()=>{
+    const idx = req.params.id;
+    note.deleteById(idx).then(()=>{
         res.status(200).json({
-            message : "Note deleted successfully"
+            message:"note deleted successfully"
         })
     })
 })
@@ -19,10 +21,11 @@ app.get("/notes",(req,res)=>{
 
 app.patch("/notes/:id",(req,res)=>{
     const idx = req.params.id;
-    const description = req.description;
-    notes[idx].description = description;
-    res.status(200).json({
-        message:"note updated successfully"
+    const description = req.body.description;
+    note.findByIdAndUpdate(idx, {description: description}).then(()=>{
+        res.status(200).json({
+            message:"note updated successfully"
+        })
     })
 
 })
