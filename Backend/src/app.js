@@ -12,9 +12,9 @@ app.delete("/notes/:id",(req,res)=>{
         })
     })
 })
+
 app.get("/notes",(req,res)=>{
     note.find().then((notes) => res.status(200).json({
-        remarks:"notes send successfully",
         notes
     }))
 })
